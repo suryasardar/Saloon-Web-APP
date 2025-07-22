@@ -1,19 +1,56 @@
 
-
-import app from './app.js';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-
+import dotenv from "dotenv";
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
+import { createServer } from "http";
+import { Server } from "socket.io";
+import app from "./app.js";
+import connectDB from "./config/db.js";
 
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log('MongoDB connected');
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+const PORT = process.env.PORT || 5000;
+connectDB();
+
+const server = createServer(app);
+
+// ---- Map User IDs to Socket IDs ----
+const userSockets = {}; // { userId: socketId }
+app.set("userSockets", userSockets);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+app.set("io", io);
+
+// Socket.IO connection
+io.on("connection", (socket) => {
+  console.log("Socket connected", socket.id);
+
+  // User identifies themselves (send after login)
+  socket.on("identify", (userId) => {
+    userSockets[userId] = socket.id;
+    console.log(`User ${userId} is now on socket ${socket.id}`);
   });
-}).catch(err => console.error(err));
+
+  socket.on("joinSalon", (salonId) => {
+    socket.join("salon-" + salonId);
+  });
+
+  // Clean up userSockets on disconnect
+  socket.on("disconnect", () => {
+    for (const [userId, sockId] of Object.entries(userSockets)) {
+      if (sockId === socket.id) {
+        delete userSockets[userId];
+        break;
+      }
+    }
+  });
+});
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
