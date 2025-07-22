@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const { salons } = useSelector((state: RootState) => state.salon);
+  // const {user}=useSelector((state: RootState) => state.auth);
 
   return (
     <div className="min-h-screen bg-black text-white">

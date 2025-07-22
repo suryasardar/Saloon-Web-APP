@@ -12,6 +12,8 @@ import BookingConfirmation from "./pages/BookingConfirmation";
 import Profile from "./pages/Profile";
 import UploadPhoto from "./pages/UploadPhoto";
 import NotFound from "./pages/NotFound";
+import Signup from "./pages/Sign-up";
+import LoginPage from "./pages/LoginPage";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,8 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/upload-photo" element={<UploadPhoto />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<LoginPage />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
