@@ -11,7 +11,7 @@ const salonSchema = new mongoose.Schema({
   adminId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   services: [{ type: mongoose.Schema.Types.ObjectId, ref: "Service" }],
   stylists: [{ type: mongoose.Schema.Types.ObjectId, ref: "Stylist" }],
-  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
+  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "SalonReview" }],
   currentQueue: [{ type: mongoose.Schema.Types.ObjectId, ref: "QueueEntry" }],
   averageWaitTime: { type: Number, default: 0 }, // minutes
 }, { timestamps: true });

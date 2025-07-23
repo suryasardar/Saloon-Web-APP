@@ -102,9 +102,18 @@ export const updateQueueStatus = async (req, res) => {
 // ADMIN ONLY (protect with admin middleware in routing)
 export const leaveQueue = async (req, res) => {
   const { entryId } = req.params;
-  const queueEntry = await QueueEntry.findByIdAndDelete(entryId);
 
+  // First, find the entry so you know which salon to update
+  const queueEntry = await QueueEntry.findById(entryId);
   if (!queueEntry) return res.status(404).json({ message: "Queue entry not found" });
+
+  // Delete the QueueEntry
+  await QueueEntry.findByIdAndDelete(entryId);
+
+  // Remove the reference from the salon's currentQueue array
+  await Salon.findByIdAndUpdate(queueEntry.salonId, {
+    $pull: { currentQueue: entryId }
+  });
 
   // Real-time update!
   const io = req.app.get("io");
